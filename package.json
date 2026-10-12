@@ -1,0 +1,73 @@
+{
+	"name": "menu-pinner",
+	"displayName": "Menu Pinner（菜单置顶 / 隐藏）",
+	"description": "把任意命令固定到 VS Code 右键菜单顶部，或隐藏不需要的菜单项。改完提示手动重启即可生效。",
+	"publisher": "menuchange",
+	"version": "1.0.0",
+	"license": "MIT",
+	"icon": "icon.png",
+	"engines": {
+		"vscode": "^1.75.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"keywords": [
+		"menu",
+		"context menu",
+		"right click",
+		"customize",
+		"sort",
+		"菜单",
+		"右键菜单"
+	],
+	"galleryBanner": {
+		"color": "#1f6feb",
+		"theme": "dark"
+	},
+	"main": "./extension.js",
+	"extensionKind": [
+		"workspace"
+	],
+	"activationEvents": [
+		"onStartupFinished"
+	],
+	"contributes": {
+		"commands": [
+			{
+				"command": "menuPinner.pinAtTop",
+				"title": "把命令固定到右键菜单顶部",
+				"category": "Menu Pinner"
+			},
+			{
+				"command": "menuPinner.hideItem",
+				"title": "隐藏某个右键菜单项",
+				"category": "Menu Pinner"
+			},
+			{
+				"command": "menuPinner.manage",
+				"title": "查看 / 还原已改动项",
+				"category": "Menu Pinner"
+			},
+			{
+				"command": "menuPinner.reapply",
+				"title": "重新应用全部改动（扩展更新后用）",
+				"category": "Menu Pinner"
+			},
+			{
+				"command": "menuPinner.restoreAll",
+				"title": "按记录还原全部改动",
+				"category": "Menu Pinner"
+			},
+			{
+				"command": "menuPinner.restoreBackups",
+				"title": "用备份文件覆盖还原",
+				"category": "Menu Pinner"
+			}
+		]
+	},
+	"scripts": {
+		"test": "node test/manifest-utils.test.js && node test/nls.test.js",
+		"package": "node tools/package-vsix.js"
+	}
+}

@@ -1,0 +1,7 @@
+# 用 vsce package 打包时排除（本仓库自带的 tools/package-vsix.js 用自己的白名单，不受此文件影响）
+.github/**
+test/**
+tools/**
+dist/**
+.gitignore
+.vscodeignore
