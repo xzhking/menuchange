@@ -2,7 +2,7 @@
 	"name": "menu-pinner",
 	"displayName": "Menu Pinner（菜单置顶 / 隐藏）",
 	"description": "把任意命令固定到 VS Code 右键菜单顶部，或隐藏不需要的菜单项。改完提示手动重启即可生效。",
-	"publisher": "menuchange",
+	"publisher": "xzhking",
 	"version": "1.0.0",
 	"license": "MIT",
 	"icon": "icon.png",

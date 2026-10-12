@@ -194,22 +194,6 @@ node tools/package-vsix.js
 - `lib/nls.js` — resolves `%key%` titles through `package.nls*.json`
 - Releasing: bump `version` in `package.json` → `git tag v1.0.0 && git push --tags`; GitHub Actions packages the VSIX and attaches it to the Release
 
-### Change these three things before publishing
-
-1. `"publisher": "menuchange"` in `package.json` → your own GitHub id (this changes the extension id and the install folder name)
-2. the repository URL placeholders in this document
-3. if you changed `publisher`/`name`, update `SELF_ID` at the top of `extension.js` to `"<publisher>.<name>"`
-
-### Publishing to the VS Code Marketplace
-
-You need an Azure DevOps organization plus a Personal Access Token:
-
-```bash
-npx @vscode/vsce publish -p <token>
-```
-
-(The default GitHub Release distribution does not need any of this.)
-
 ## License
 
 [MIT](LICENSE)

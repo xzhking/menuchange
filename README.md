@@ -194,22 +194,6 @@ node tools/package-vsix.js
 - `lib/nls.js`：把清单里的 `%key%` 标题解析成 `package.nls*.json` 里的真实文案
 - 发版：改 `package.json` 的 `version` → `git tag v1.0.0 && git push --tags`，GitHub Actions 会自动打包并把 VSIX 挂到 Release 上
 
-### 发布前请改这三处
-
-1. `package.json` 里的 `"publisher": "menuchange"` → 换成你的 GitHub ID（会影响扩展 ID 和安装目录名）
-2. 本文档里的仓库地址占位符
-3. 如果改过 `publisher`/`name`，`extension.js` 顶部的 `SELF_ID` 要同步改成 `"<publisher>.<name>"`
-
-### 想发到 VS Code Marketplace
-
-需要 Azure DevOps 组织 + Personal Access Token，然后：
-
-```bash
-npx @vscode/vsce publish -p <token>
-```
-
-（本仓库默认的 GitHub Release 分发不需要这些。）
-
 ## License
 
 [MIT](LICENSE)
