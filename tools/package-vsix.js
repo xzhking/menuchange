@@ -17,7 +17,7 @@ const ROOT = path.resolve(__dirname, '..');
 const pkg = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8'));
 
 // 进包的文件（相对于扩展根目录）
-const INCLUDE_FILES = ['package.json', 'extension.js', 'README.md', 'CHANGELOG.md', 'LICENSE', 'icon.png'];
+const INCLUDE_FILES = ['package.json', 'extension.js', 'README.md', 'README.en.md', 'CHANGELOG.md', 'LICENSE', 'icon.png'];
 const INCLUDE_DIRS = ['lib'];
 // 明确排除：test/、tools/、.github/、dist/、点文件
 

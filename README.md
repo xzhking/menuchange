@@ -1,5 +1,7 @@
 # Menu Pinner
 
+**中文** | [English](README.en.md)
+
 <img src="icon.png" width="96" alt="icon">
 
 把**任意命令固定到 VS Code 右键菜单顶部**，或**隐藏**不想要的菜单项。
