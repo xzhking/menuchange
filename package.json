@@ -63,6 +63,11 @@
 				"command": "menuPinner.restoreBackups",
 				"title": "用备份文件覆盖还原",
 				"category": "Menu Pinner"
+			},
+			{
+				"command": "menuPinner.uninstall",
+				"title": "还原并卸载本扩展",
+				"category": "Menu Pinner"
 			}
 		]
 	},

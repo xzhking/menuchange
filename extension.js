@@ -633,6 +633,85 @@ async function openStateFile() {
   await vscode.window.showTextDocument(doc, { preview: false });
 }
 
+// ------------------------------------------------------------------ 一键还原并卸载
+
+/**
+ * 一条命令做完"收尾"：还原所有被改过的扩展清单 → 清空记录 → 卸载本扩展。
+ *
+ * 为什么要先还原：被改的是**别的扩展的清单**，卸载本扩展并不会把它们改回去。
+ * 还原方式用两层保险：
+ *   1) 按记录写回原始 group / when（即使备份丢了也能回到原值）；
+ *   2) 再用 <package.json>.menuPinner.bak 整体覆盖（连手工改过的残留也一并抹掉）。
+ * 只有第 2 步成功的清单，才会删掉它的备份文件，避免给别人的扩展目录留垃圾。
+ */
+async function cmdRestoreAndUninstall() {
+  const changes = store.data.changes;
+  const backups = Object.entries(store.data.backups || {}).filter(([, bak]) => fs.existsSync(bak));
+
+  const yes = await vscode.window.showWarningMessage(
+    '将依次执行：\n' +
+      `1) 按记录还原 ${changes.length} 项菜单改动；\n` +
+      `2) 用备份把 ${backups.length} 个被改过的扩展清单覆盖回原样；\n` +
+      '3) 卸载 Menu Pinner 扩展。\n\n' +
+      '完成后请完全退出 VS Code 再打开。是否继续？',
+    { modal: true },
+    '还原并卸载'
+  );
+  if (yes !== '还原并卸载') return;
+  log('=== 开始还原并卸载 ===');
+
+  // 1) 按记录还原
+  for (const c of [...changes]) {
+    const r = restoreChange(c);
+    log(`按记录还原 ${c.menu} / ${c.title || c.command}：${r.ok ? 'OK' : '失败'}（${r.detail}）`);
+  }
+
+  // 2) 用备份整体覆盖
+  const restored = [];
+  const failed = [];
+  for (const [manifest, bak] of Object.entries(store.data.backups || {})) {
+    if (!fs.existsSync(bak)) { failed.push(manifest); continue; }
+    try {
+      atomicWrite(manifest, fs.readFileSync(bak, 'utf8'));
+      restored.push([manifest, bak]);
+      log(`已用备份还原：${manifest}`);
+    } catch (e) {
+      failed.push(manifest);
+      log(`还原失败 ${manifest}：${e.message}`);
+    }
+  }
+
+  // 3) 清空记录 + 清掉自身清单里的内置命令置顶项
+  store.data.changes = [];
+  store.data.backups = {};
+  regenerateOwnManifest();
+  store.save();
+
+  // 4) 已成功还原的备份文件可以删了，别留在别人扩展目录里
+  for (const [, bak] of restored) {
+    try { fs.unlinkSync(bak); log(`已删除备份：${bak}`); } catch { /* ignore */ }
+  }
+
+  vscode.window.showInformationMessage(
+    `已还原 ${restored.length} 个扩展清单${failed.length ? `，${failed.length} 个失败（详见 Menu Pinner 日志）` : ''}，正在卸载扩展…`
+  );
+
+  // 5) 触发卸载（VS Code 内部命令，参数就是扩展 ID 字符串）
+  try {
+    await vscode.commands.executeCommand('workbench.extensions.uninstallExtension', SELF_ID);
+    log('已调用卸载命令，重启 VS Code 后完成清理');
+    try { fs.unlinkSync(store.file); } catch { /* 状态文件删不掉也无所谓 */ }
+  } catch (e) {
+    log('自动卸载失败，改为打开扩展页：' + e.message);
+    try {
+      await vscode.commands.executeCommand('workbench.view.extensions');
+      await vscode.commands.executeCommand('workbench.extensions.search', `@id:${SELF_ID}`);
+    } catch { /* ignore */ }
+    vscode.window.showWarningMessage('自动卸载没成功，已在扩展页定位到 Menu Pinner，请点 Uninstall。', '知道了');
+  }
+  out.show();
+}
+
 // ------------------------------------------------------------------ 生命周期
 
 function activate(context) {
@@ -648,6 +727,7 @@ function activate(context) {
   register('menuPinner.reapply', cmdReapply);
   register('menuPinner.restoreAll', cmdRestoreAll);
   register('menuPinner.restoreBackups', cmdRestoreBackups);
+  register('menuPinner.uninstall', cmdRestoreAndUninstall);
 
   log(`已激活。状态文件：${store.file}；当前记录改动 ${store.data.changes.length} 项`);
   if (store.data.changes.length) {
