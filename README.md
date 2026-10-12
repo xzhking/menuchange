@@ -15,30 +15,51 @@
 
 ## 安装
 
-### 方式一：装 VSIX（推荐）
+两种方式**只做其中一种**即可，不要都做。装好后扩展 ID 是 `menuchange.menu-pinner`。
 
-1. 到本仓库的 **Releases** 页面下载 `menuchange.menu-pinner-x.y.z.vsix`
-2. VS Code 里 `Ctrl+Shift+P` → **Extensions: Install from VSIX...** → 选刚下载的文件
-3. 或者命令行安装：
+### 方式一：装 VSIX 包（推荐 —— 不用手动改任何文件）
 
-```bash
-code --install-extension menuchange.menu-pinner-1.0.0.vsix
-```
+**第 1 步 · 拿到 `.vsix` 文件**（下面三条任选一条，不用全做）：
 
-### 方式二：手动放文件夹
+| 来源 | 怎么做 |
+|---|---|
+| **本仓库直接下载**（最省事） | 点这里 → [`dist/menuchange.menu-pinner-1.0.0.vsix`](dist/menuchange.menu-pinner-1.0.0.vsix)，在文件页点 **Download** |
+| **Releases 页面** | 仓库右侧 **Releases** → 对应版本的 **Assets** → `menuchange.menu-pinner-x.y.z.vsix`（打 tag 时由 GitHub Actions 自动生成） |
+| **自己从源码打包** | `node tools/package-vsix.js`（零依赖，产物落在 `dist/`） |
 
-把仓库里的 `package.json`、`extension.js`、`icon.png`、`lib/` 放进：
+**第 2 步 · 安装**（下面两种**任选一种**，不是依次执行）：
+
+- **界面**：VS Code 里 `Ctrl+Shift+P` → **Extensions: Install from VSIX...** → 选中第 1 步拿到的 `.vsix`
+- **命令行**：`code --install-extension <第 1 步的文件路径>`，例如：
+
+  ```bash
+  code --install-extension dist/menuchange.menu-pinner-1.0.0.vsix
+  ```
+
+  若提示 `code` 不是内部或外部命令，说明 VS Code 的 `bin` 没在 PATH 里，用完整路径，例如 Windows：
+  `& "D:\...\Microsoft VS Code\bin\code.cmd" --install-extension <路径>`
+
+**第 3 步 · 重启 VS Code**（完全退出所有窗口再打开）。
+
+### 方式二：手动放文件夹（适合想直接跑源码的人）
+
+与方式一**只做其一**。把仓库里的 `package.json`、`extension.js`、`icon.png`、`lib/` 复制到下面这个目录（目录名必须是 `menuchange.menu-pinner-1.0.0`）：
 
 | 系统 | 目录 |
 |---|---|
 | Windows | `%USERPROFILE%\.vscode\extensions\menuchange.menu-pinner-1.0.0\` |
 | macOS / Linux | `~/.vscode/extensions/menuchange.menu-pinner-1.0.0/` |
 
-然后重启 VS Code。
+然后完全退出并重启 VS Code。VS Code 启动扫描时会自动收录它（日志里会出现 `Added extensions to default profile from external source`）；如果扩展列表里没看到，再重启一次。
+
+> 这种方式不会被自动更新，改动也不会被登记版本；长期使用建议回到方式一。
 
 ### 升级
 
-重新装一次新 VSIX 即可（`code --install-extension xxx.vsix --force`）。
+| 当前装法 | 怎么升级 |
+|---|---|
+| 方式一（VSIX） | 重新装一次新版本 VSIX，同 ID 会覆盖：`code --install-extension dist/menuchange.menu-pinner-<新版本>.vsix --force` |
+| 方式二（文件夹） | 用新源码覆盖该目录里的文件，重启 VS Code |
 
 ---
 

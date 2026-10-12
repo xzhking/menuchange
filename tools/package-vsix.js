@@ -190,6 +190,15 @@ const entries = [
 const outDir = path.join(ROOT, 'dist');
 fs.mkdirSync(outDir, { recursive: true });
 const vsixPath = path.join(outDir, `${pkg.publisher}.${pkg.name}-${pkg.version}.vsix`);
+
+// dist/ 会随仓库提交（方便别人直接下载），所以每次只保留当前版本的包，避免二进制堆积
+for (const f of fs.readdirSync(outDir)) {
+  if (f.endsWith('.vsix') && f !== path.basename(vsixPath)) {
+    fs.rmSync(path.join(outDir, f), { force: true });
+    console.log(`已清理旧包：${f}`);
+  }
+}
+
 const buf = zip(entries);
 fs.writeFileSync(vsixPath, buf);
 
